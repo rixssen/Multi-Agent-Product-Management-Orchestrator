@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent PM Orchestrator Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Showdown JS for markdown parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <link rel="stylesheet" href="/static/index.css">
+</head>
+<body>
+    <div class="glass-bg"></div>
+    
+    <div class="app-container">
+        <!-- Sidebar / Configuration -->
+        <aside class="sidebar glass-card">
+            <div class="brand">
+                <i class="fa-solid fa-microchip-ai brand-icon"></i>
+                <h2>PM Orchestrator</h2>
+            </div>
+            <div class="tagline">Multi-Agent State Machine</div>
+            
+            <div class="config-section">
+                <h3><i class="fa-solid fa-play"></i> Initialize Work</h3>
+                <div class="input-group">
+                    <label for="promptInput">Product Description</label>
+                    <textarea id="promptInput" placeholder="e.g., Build a secure collaborative markdown note taking application with autosave..."></textarea>
+                </div>
+                <button id="startBtn" class="primary-btn"><i class="fa-solid fa-circle-play"></i> Start Orchestrator</button>
+            </div>
+            
+            <div class="active-session-info" id="sessionInfo" style="display: none;">
+                <h3><i class="fa-solid fa-circle-info"></i> Session Details</h3>
+                <div class="info-row">
+                    <span class="label">ID:</span>
+                    <span class="value" id="dispSessionId">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Status:</span>
+                    <span class="value badge" id="dispStatus">idle</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Agent:</span>
+                    <span class="value" id="dispAgent">-</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Node Workflow Map -->
+            <section class="workflow-section glass-card">
+                <h3><i class="fa-solid fa-network-wired"></i> State Flow Visualizer</h3>
+                <div class="workflow-nodes">
+                    <div class="node-item" id="node-input">
+                        <div class="node-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <span class="node-name">Guardrail</span>
+                    </div>
+                    <div class="node-connector"></div>
+                    <div class="node-item" id="node-pm">
+                        <div class="node-icon"><i class="fa-solid fa-file-invoice"></i></div>
+                        <span class="node-name">PM (PRD)</span>
+                    </div>
+                    <div class="node-connector"></div>
+                    <div class="node-item" id="node-tech">
+                        <div class="node-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                        <span class="node-name">Tech Specs</span>
+                    </div>
+                    <div class="node-connector"></div>
+                    <div class="node-item" id="node-qa">
+                        <div class="node-icon"><i class="fa-solid fa-vial"></i></div>
+                        <span class="node-name">QA Plan</span>
+                    </div>
+                    <div class="node-connector"></div>
+                    <div class="node-item" id="node-complete">
+                        <div class="node-icon"><i class="fa-solid fa-box-archive"></i></div>
+                        <span class="node-name">Finalized</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bottom Panel Split (Left: Logs & Controls, Right: Outputs) -->
+            <div class="split-workspace">
+                <!-- Logs / Chat & Human Interrupt Panel -->
+                <div class="left-panel">
+                    <!-- Human in the loop section -->
+                    <div class="interrupt-card glass-card warning-glow" id="interruptPanel" style="display: none;">
+                        <div class="card-header">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <h3>Human-in-the-Loop Intercept</h3>
+                        </div>
+                        <p id="interruptMessage">Awaiting review approval from human supervisor.</p>
+                        <div class="input-group">
+                            <label for="feedbackInput">Feedback (optional if approving)</label>
+                            <textarea id="feedbackInput" placeholder="Specify changes required, e.g., 'Ensure security details include data-at-rest encryption specs'"></textarea>
+                        </div>
+                        <div class="action-buttons">
+                            <button id="feedbackBtn" class="secondary-btn"><i class="fa-solid fa-rotate-left"></i> Request Revision</button>
+                            <button id="approveBtn" class="success-btn"><i class="fa-solid fa-circle-check"></i> Approve & Proceed</button>
+                        </div>
+                    </div>
+
+                    <!-- Logs Timeline -->
+                    <div class="logs-card glass-card">
+                        <h3><i class="fa-solid fa-terminal"></i> Activity & Agent Logs</h3>
+                        <div class="logs-container" id="logsContainer">
+                            <div class="empty-state">No active orchestrator session. Initialize a product idea above.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Document Display tabs -->
+                <div class="right-panel glass-card">
+                    <div class="tab-headers">
+                        <button class="tab-btn active" data-tab="prdTab"><i class="fa-solid fa-file-lines"></i> PRD</button>
+                        <button class="tab-btn" data-tab="techTab"><i class="fa-solid fa-code"></i> Tech Specs</button>
+                        <button class="tab-btn" data-tab="qaTab"><i class="fa-solid fa-clipboard-list"></i> QA Plan</button>
+                    </div>
+                    <div class="tab-content" id="prdTab">
+                        <div class="empty-doc">PRD not yet generated.</div>
+                    </div>
+                    <div class="tab-content" id="techTab" style="display: none;">
+                        <div class="empty-doc">Technical specs not yet generated.</div>
+                    </div>
+                    <div class="tab-content" id="qaTab" style="display: none;">
+                        <div class="empty-doc">QA testing plans not yet generated.</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
